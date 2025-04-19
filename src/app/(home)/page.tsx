@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +18,9 @@ export default function Home() {
       </div>
       <div>
         <Textarea placeholder="Textarea" />
+      </div>
+      <div>
+        <Checkbox></Checkbox>
       </div>
     </div>
   );
