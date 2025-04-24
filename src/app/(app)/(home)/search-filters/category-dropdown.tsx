@@ -1,13 +1,14 @@
 "use client"
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Category } from "@/payload-types";
-import { use, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useDropdownPosition } from "./use-dropdown-position";
 import { SubcategoryMenu } from "./subcategory-menu";
+import { CustomCategory } from "../types";
+import Link from "next/link";
 
 interface Props {
-    category: Category;
+    category: CustomCategory;
     isActive?: boolean;
     isNavigationHover?: boolean;
 };
@@ -33,18 +34,29 @@ export const CategoryDropdown = ({
     const onMouseLeave = () => {
         setIsOpen(false);
     }
+    // TODO: Potentially improve mobile experience
+    // const toggleDropdown = () => {
+    //     if (category.subcategories?.doc?.length) {
+    //         setIsOpen(!isOpen);
+    //     }
+    // };
     return (
         <div className="relative"
             ref={dropdownRef}
             onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}>
+            onMouseLeave={onMouseLeave}
+            // onClick={() => toggleDropdown()}
+            >
             <div className="relative mx-2">
                 <Button variant={'elevated'}
                     className={cn(
                         "h-11 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
-                        isActive && !isNavigationHover && "bg-white border-primary"
+                        isActive && !isNavigationHover && "bg-white border-primary",
+                        isOpen && "bg-white border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-x-[4px] -translate-y-[4px]",
                     )}>
+                    <Link href={`/${category.slug === "all" ? "" : category.slug}`}>
                     {category.name}
+                    </Link>
                 </Button>
                 {category.subcategories && category.subcategories.length > 0 && (
                     <div className={cn(
