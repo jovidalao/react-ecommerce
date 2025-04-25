@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
@@ -20,7 +20,7 @@ export const CategoriesSidebar = ({
 }: Props) => {
 
     const trpc = useTRPC();
-    const {data} = useQuery(trpc.categories.getMany.queryOptions());
+    const { data } = useQuery(trpc.categories.getMany.queryOptions());
 
     const router = useRouter();
     const [parentCategories, setParentCategories] = useState<CategoriesGetManyOutput | null>(null);
@@ -40,7 +40,7 @@ export const CategoriesSidebar = ({
 
     const handleCategoryClick = (category: CategoriesGetManyOutput[1]) => {
         if (category.subcategories && category.subcategories.length > 0) {
-            setParentCategories(category.subcategories as CategoriesGetManyOutput);
+            setParentCategories(category.subcategories as unknown as CategoriesGetManyOutput);
             setSelectedCategory(category);
         } else {
             // This is a leaf category (no subcategories)
@@ -64,7 +64,7 @@ export const CategoriesSidebar = ({
             <SheetContent
                 side="left"
                 className="p-0 transition-none"
-                
+
             >
                 <SheetHeader className="p-6 border-b" style={{ backgroundColor }}>
                     <SheetTitle>
