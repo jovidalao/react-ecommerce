@@ -59,7 +59,7 @@ export const Navbar = () => {
                 onOpenChange={setSidebarOpen} items={navbarItems} />
             <Link href="/" className="pl-6 flex items-center">
                 <span className={cn("text-5xl font-semibold", poppins.className)}>
-                    Shopping
+                    FunRoad
                 </span>
             </Link>
 
@@ -77,13 +77,13 @@ export const Navbar = () => {
                     asChild
                     variant={"secondary"}
                     className="hidden lg:flex border-l border-t-0 border-b-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg text-black">
-                    <Link href="/login">
+                    <Link prefetch  href="/sign-in">
                         Login
                     </Link>
                 </Button>
                 <Button
                     variant={"secondary"} className="hidden lg:flex border-l border-t-0 border-b-0 px-12 h-full rounded-none bg-black hover:bg-pink-400 transition-colors text-lg hover:text-black text-white">
-                    <Link href="/selling">
+                    <Link prefetch  href="/sign-up">
                         Start Selling
                     </Link>
                 </Button>
