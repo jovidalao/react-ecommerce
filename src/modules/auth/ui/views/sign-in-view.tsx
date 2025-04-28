@@ -11,15 +11,15 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
+    FormMessage
 } from "@/components/ui/form"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useTRPC } from "@/trpc/client"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { useTRPC } from "@/trpc/client"
 
 const poppins = Poppins({
     subsets: ['latin'],
@@ -30,14 +30,17 @@ export const SignInView = () => {
     const router = useRouter();
 
     const trpc = useTRPC();
+    const queryClient = useQueryClient();
+
     const login = useMutation(trpc.auth.login.mutationOptions({
         onError: (error) => {
             toast.error(error.message);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
             router.push("/");
         }
-    }));
+    }))
 
     const form = useForm<z.infer<typeof loginSchema>>({
         mode: "all",

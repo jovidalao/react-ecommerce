@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NavbarSidebar } from "./navbar-sidebar";
 import { MenuIcon } from "lucide-react";
+import { useSession } from "@/hooks/use-session";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -53,6 +54,8 @@ export const Navbar = () => {
     const pathname = usePathname();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
 
+    const session = useSession();
+
     return (
         <nav className="flex justify-between bg-white h-20 border-b font-medium">
             <NavbarSidebar open={isSidebarOpen}
@@ -72,18 +75,29 @@ export const Navbar = () => {
                     >{item.children}</NavbarItem>
                 ))}
             </div>
-            <div className="flex lg:flex">
-                <Button
-                    asChild
-                    variant={"secondary"}
-                    className="hidden lg:flex border-l border-t-0 border-b-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg text-black">
-                    <Link prefetch  href="/sign-in">
-                        Login
+            {session.data?.user ? (
+                <div className="hidden lg:flex">
+                    <Button
+                    variant={"secondary"} className="hidden lg:flex border-l border-t-0 border-b-0 px-12 h-full rounded-none bg-black hover:bg-pink-400 transition-colors text-lg hover:text-black text-white">
+                    <Link prefetch href="/admin">
+                        Dash Board
                     </Link>
                 </Button>
+                </div>
+            ): (
+
+                <div className = "hidden lg:flex">
+                <Button
+                    asChild
+                    variant = { "secondary" }
+                    className = "hidden lg:flex border-l border-t-0 border-b-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg text-black">
+                    <Link prefetch href = "/sign-in">
+                        Login
+                    </Link>
+                </Button >
                 <Button
                     variant={"secondary"} className="hidden lg:flex border-l border-t-0 border-b-0 px-12 h-full rounded-none bg-black hover:bg-pink-400 transition-colors text-lg hover:text-black text-white">
-                    <Link prefetch  href="/sign-up">
+                    <Link prefetch href="/sign-up">
                         Start Selling
                     </Link>
                 </Button>
@@ -96,9 +110,11 @@ export const Navbar = () => {
                         <MenuIcon />
                     </Button>
                 </div>
-            </div>
+            </div >
+        )}
+            
 
-        </nav>
+        </nav >
 
     );
 }

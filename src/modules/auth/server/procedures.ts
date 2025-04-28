@@ -1,9 +1,8 @@
-import { headers as getHeaders, cookies as GetCookies, cookies } from "next/headers";
+import { headers as getHeaders} from "next/headers";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { AUTH_COOKIE } from "../constants";
 import { loginSchema, registerSchema } from "../schemas";
-import path from "path";
+import { generateAuthCookie } from "../utils";
 
 export const authRouter = createTRPCRouter({
   session: baseProcedure.query(async ({ ctx }) => {
@@ -11,12 +10,6 @@ export const authRouter = createTRPCRouter({
 
     const session = await ctx.db.auth({ headers });
     return session;
-  }),
-  logout: baseProcedure.mutation(async () => {
-    const cookies = await GetCookies();
-    cookies.delete({
-      name: AUTH_COOKIE,
-    });
   }),
   register: baseProcedure
     .input(registerSchema)
@@ -60,14 +53,10 @@ export const authRouter = createTRPCRouter({
           message: "Invalid email or password",
         });
       }
-      
-      const cookies = await GetCookies();
-        cookies.set({
-          name: AUTH_COOKIE,
-          value: data.token,
-          httpOnly: true,
-          path: "/",
-        });
+      generateAuthCookie({
+        prefix: ctx.db.config.cookiePrefix,
+        value: data.token,
+      });
     }),
 
   login: baseProcedure.input(loginSchema).mutation(async ({ input, ctx }) => {
@@ -84,14 +73,10 @@ export const authRouter = createTRPCRouter({
         message: "Invalid email or password",
       });
     }
-    const cookies = await GetCookies();
-    cookies.set({
-      name: AUTH_COOKIE,
+    await generateAuthCookie({
+      prefix: ctx.db.config.cookiePrefix,
       value: data.token,
-      httpOnly: true,
-      path: "/",
-      // TODO: Ensure cross-domain cookie sharing
-    });
+    })
     return data;
   }),
 });
