@@ -19,7 +19,7 @@ export const Categories = ({ data }: Props) => {
     const measureRef = useRef<HTMLDivElement>(null);
     const viewAllRef = useRef<HTMLButtonElement>(null);
     const [visibleCount, setVisibleCount] = useState(data.length);
-    const [isAnyHoverd, setIsAnyHovered] = useState(false);
+    const [isAnyHovered, setIsAnyHovered] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const categoryParam = params.category as string | undefined;
@@ -87,6 +87,8 @@ export const Categories = ({ data }: Props) => {
                 ref={containerRef}
                 onMouseEnter={() => setIsAnyHovered(true)}
                 onMouseLeave={() => setIsAnyHovered(false)}>
+
+                {/* TODO: Hardcode "ALL" button*/}    
                 {data.slice(0, visibleCount).map((category) => (
                     <div key={category.id}>
                         <CategoryDropdown
@@ -102,7 +104,7 @@ export const Categories = ({ data }: Props) => {
                         variant={"elevated"}
                         className={cn(
                             "h-11 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black mr-0",
-                            isActiveCategoryHidden && !isAnyHoverd && "bg-white border-primary")}
+                            isActiveCategoryHidden && !isAnyHovered && "bg-white border-primary")}
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                         View All
                         <ListFilterIcon className="ml-2" />
