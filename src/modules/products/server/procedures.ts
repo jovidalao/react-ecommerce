@@ -18,16 +18,17 @@ import { z } from "zod";
 // 产品相关的 tRPC 路由定义
 // 包含了与产品数据获取相关的所有查询和操作
 export const productsRouter = createTRPCRouter({
-  // getMany 查询 - 获取多个产品
-  // 
+  // 定义输入参数的验证规则, getMany 查询 - 获取多个产品
   // 该查询支持按分类筛选产品，可以返回指定分类及其子分类下的所有产品
   getMany: baseProcedure
-    // 定义输入参数的验证规则
+
     // 使用 Zod 库验证输入对象：
     // - category: 可选的字符串参数，可以为 null，用于按分类筛选产品
     .input(
       z.object({
         category: z.string().nullable().optional(),
+        minPrice: z.string().nullable().optional(),
+        maxPrice: z.string().nullable().optional(),
       }),
     )
     // 实现查询逻辑
@@ -37,7 +38,18 @@ export const productsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       // 初始化查询条件对象，默认为空（不设限制条件）
       const where: Where = {};
-      
+
+      if (input.minPrice) {
+        where.price = {
+          greater_than_equal: input.minPrice,
+        }
+      }
+      if (input.maxPrice) {
+        where.price = {
+          less_than_equal: input.minPrice,
+        }
+      }
+
       // 如果提供了分类参数，则构建基于分类的筛选条件
       if (input.category) {
         // 查询指定 slug 的分类数据
@@ -80,22 +92,18 @@ export const productsRouter = createTRPCRouter({
               (subcategory) => subcategory.slug,
             ),
           );
+          // 构建产品查询条件
+          // 通过 "category.slug" 字段匹配：
+          // 1. 父分类的 slug
+          // 2. 所有子分类的 slug
+          // 这样可以同时查询到直接属于该分类的产品和属于其子分类的产品
+          where["category.slug"] = {
+            in: [parentCategory.slug, ...subcategoriesSlugs],
+          };
         }
-        
-        // 构建产品查询条件
-        // 
-        // 通过 "category.slug" 字段匹配：
-        // 1. 父分类的 slug
-        // 2. 所有子分类的 slug
-        // 
-        // 这样可以同时查询到直接属于该分类的产品和属于其子分类的产品
-        where["category.slug"] = {
-          in: [parentCategory.slug, ...subcategoriesSlugs],
-        };
       }
 
       // 执行产品查询
-      // 
       // - collection: 指定查询的集合为"products"
       // - where: 应用之前构建的查询条件
       // - depth: 1，填充一级关联数据，包括分类和图片信息

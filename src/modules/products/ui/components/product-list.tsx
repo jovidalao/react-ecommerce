@@ -20,16 +20,19 @@ interface Props {
 export const ProductList = ({ category }: Props) => {
     // 获取tRPC客户端实例，用于调用后端API
     const trpc = useTRPC();
-    
+
     // 使用Suspense模式的React Query钩子获取产品数据
     // 当数据加载时会自动挂起组件，配合外层Suspense组件显示加载状态
     const { data } = useSuspenseQuery(trpc.products.getMany.queryOptions({ category }));
 
     return (
-        <div>
-            {/* 临时展示方式：将获取的数据以JSON格式展示 */}
-            {/* 在实际应用中，这里应该是格式化的产品列表UI */}
-            {JSON.stringify(data, null, 2)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {data?.docs.map((product) => (
+                <div key={product.id} className="border rounded-md bg-white">
+                    <h2 className="text-xl font-medium">{product.name}</h2>
+                    <p className="">${product.price}</p>
+                </div>
+            ))}
         </div>
     )
 }
