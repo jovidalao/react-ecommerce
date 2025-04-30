@@ -39,15 +39,19 @@ export const productsRouter = createTRPCRouter({
       // 初始化查询条件对象，默认为空（不设限制条件）
       const where: Where = {};
 
-      if (input.minPrice) {
+      if (input.minPrice && input.maxPrice) {
+        where.price = {
+          less_than_equal: input.maxPrice,
+          greater_than_equal: input.minPrice,
+        };
+      } else if (input.minPrice) {
         where.price = {
           greater_than_equal: input.minPrice,
-        }
-      }
-      if (input.maxPrice) {
+        };
+      } else if (input.maxPrice) {
         where.price = {
-          less_than_equal: input.minPrice,
-        }
+          less_than_equal: input.maxPrice,
+        };
       }
 
       // 如果提供了分类参数，则构建基于分类的筛选条件
